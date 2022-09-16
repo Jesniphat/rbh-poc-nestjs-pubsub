@@ -16,47 +16,43 @@ export class PubSubAsyncConsumeService {
     @Inject('PUB_SUB_CLIENT') private readonly pubSubClient: PubSub,
     private readonly config: ConfigService,
   ) {
-    this.initPubSubPocTopicConsume().then(() => this.logger.log(`init some success.`));
+    this.initPubSubPocTopicConsume();
   }
 
-  protected async initPubSubPocTopicConsume(): Promise<void> {
-    try {
-      const subscriptionName = `${this.config.get(
-        'PUB_SUB_TOPICS',
-      )}-subscription`;
+  protected initPubSubPocTopicConsume(): void {
+    const subscriptionName = `${this.config.get(
+      'PUB_SUB_TOPICS',
+    )}-subscription`;
 
-      // References an existing subscription.
-      // Note that flow control settings are not persistent across subscribers.
-      const subscription = this.pubSubClient.subscription(
-        subscriptionName,
-        this.subscriberOptions,
-      );
+    // References an existing subscription.
+    // Note that flow control settings are not persistent across subscribers.
+    const subscription = this.pubSubClient.subscription(
+      subscriptionName,
+      this.subscriberOptions,
+    );
 
-      this.logger.log(
-        `Subscriber to subscription ${
-          subscription.name
-        } is ready to receive messages at a controlled volume of ${10} messages.`,
-      );
+    this.logger.log(
+      `Subscriber to subscription ${
+        subscription.name
+      } is ready to receive messages at a controlled volume of ${10} messages.`,
+    );
 
-      const messageHandler = (message) => {
-        this.logger.log(`Received message: ${message.id}`);
-        this.logger.log(`\tData: ${message.data}`);
-        this.logger.log(`\tAttributes: ${message.attributes}`);
-        // Call some process here.
-        // "Ack" (acknowledge receipt of) the message
-        message.ack();
-      };
+    const messageHandler = (message) => {
+      this.logger.log(`Received message: ${message.id}`);
+      this.logger.log(`\tData: ${message.data}`);
+      this.logger.log(`\tAttributes: ${message.attributes}`);
+      // Call some process here.
+      // "Ack" (acknowledge receipt of) the message
+      message.ack();
+    };
 
-      subscription.on('message', messageHandler);
-      subscription.on('error', (e) => {
-        // Do something with error here.
-        this.logger.error(`Have error ${e?.message()}`);
-      });
+    subscription.on('message', messageHandler);
+    subscription.on('error', (e) => {
+      // Do something with error here.
+      this.logger.error(`Have error ${e?.message()}`);
+    });
 
-      this.subscriptions.push(subscription);
-    } catch (e) {
-      this.logger.error(`Have init error ${e?.message()}`);
-    }
+    this.subscriptions.push(subscription);
   }
 
   public onApplicationShutdown(signal: string) {
