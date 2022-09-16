@@ -22,3 +22,7 @@ export interface PubSubTopicMapping {
 export interface SubscriptionOptions {
   subscriptionId: string;
 }
+
+export interface TopicMapping {
+  [topicId: string]: SubscriptionOptions;
+}
