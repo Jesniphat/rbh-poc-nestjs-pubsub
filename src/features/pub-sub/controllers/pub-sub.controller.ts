@@ -36,7 +36,7 @@ export class PubSubController {
   @Put('send-message')
   public async publishMessage(): Promise<string[]> {
     const messageIds = [];
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 20; i++) {
       const message = `Hello ${i + 1}`;
       const messageId = await this.pubSubPublish.sendPublishMessage(message);
       messageIds.push(messageId);
